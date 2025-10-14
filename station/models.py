@@ -1,4 +1,6 @@
+from django.core.exceptions import ValidationError
 from django.db import models
+
 
 
 class TrainType(models.Model):
@@ -12,7 +14,7 @@ class TrainType(models.Model):
 
 
 class Train(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     cargo_num = models.IntegerField()
     place_in_cargo = models.IntegerField()
     train_type = models.ForeignKey(TrainType, on_delete=models.CASCADE, related_name="trains")
@@ -38,7 +40,7 @@ class Crew(models.Model):
 
 
 class Station(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
 
@@ -65,6 +67,7 @@ class Route(models.Model):
 
     class Meta:
         verbose_name_plural = "routes"
+        unique_together = ["source", "destination"]
         ordering = ("source", "destination", "distance")
 
     def __str__(self):
@@ -79,7 +82,17 @@ class Journey(models.Model):
     crew = models.ManyToManyField(Crew)
 
     def __str__(self):
-        return f"{self.route.name} {self.train.name}"
+        return (f"{self.route.name} {self.train.name}"
+                f"({self.departure_time} - {self.arrival_time})")
+
+    def clean(self):
+        if self.departure_time >= self.arrival_time:
+            raise ValidationError(
+                "Departure time must be earlier than arrival time.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(Journey, self).save(*args, **kwargs)
 
 
 class Order(models.Model):
