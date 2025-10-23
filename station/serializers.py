@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from station.models import TrainType, Train, Crew, Station, Route
+from station.models import TrainType, Train, Crew, Station, Route, Journey
 
 
 class TrainTypeSerializer(serializers.ModelSerializer):
@@ -18,7 +18,13 @@ class TrainSerializer(serializers.ModelSerializer):
 class CrewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Crew
-        fields = ("id", "first_name", "last_name")
+        fields = ("id", "first_name", "last_name", "full_name")
+
+
+class CrewListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Crew
+        fields = ("id", "full_name",)
 
 
 class StationSerializer(serializers.ModelSerializer):
@@ -37,3 +43,27 @@ class RouteListSerializer(RouteSerializer):
     source = serializers.SlugRelatedField(slug_field="name", read_only=True)
     destination = serializers.SlugRelatedField(slug_field="name", read_only=True)
 
+
+class JourneySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Journey
+        fields = "__all__"
+
+
+class JourneyListSerializer(JourneySerializer):
+    route = serializers.SlugRelatedField(slug_field="name", read_only=True)
+    train = serializers.SlugRelatedField(slug_field="name", read_only=True)
+
+
+    class Meta:
+        model = Journey
+        fields = ("id",
+                  "route",
+                  "train",
+                  "departure_time",
+                  "arrival_time")
+
+class JourneyDetailSerializer(JourneySerializer):
+    route = serializers.SlugRelatedField(slug_field="name", read_only=True)
+    train = TrainSerializer(read_only=True)
+    crew = CrewListSerializer(many=True, read_only=True)
