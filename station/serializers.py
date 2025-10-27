@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from station.models import TrainType, Train, Crew, Station, Route, Journey
 
@@ -45,6 +46,15 @@ class RouteListSerializer(RouteSerializer):
 
 
 class JourneySerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        data = super(JourneySerializer, self).validate(attrs)
+        Journey.validate_departure_time(
+            attrs["departure_time"],
+            attrs["arrival_time"],
+            ValidationError
+        )
+        return data
+
     class Meta:
         model = Journey
         fields = "__all__"
@@ -53,7 +63,6 @@ class JourneySerializer(serializers.ModelSerializer):
 class JourneyListSerializer(JourneySerializer):
     route = serializers.SlugRelatedField(slug_field="name", read_only=True)
     train = serializers.SlugRelatedField(slug_field="name", read_only=True)
-
 
     class Meta:
         model = Journey

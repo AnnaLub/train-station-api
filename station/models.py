@@ -93,10 +93,17 @@ class Journey(models.Model):
         return (f"{self.route.name} {self.train.name}"
                 f"({self.departure_time} - {self.arrival_time})")
 
-    def clean(self):
-        if self.departure_time >= self.arrival_time:
-            raise ValidationError(
+    @staticmethod
+    def validate_departure_time(departure_time, arrival_time, error_to_raise):
+        if departure_time >= arrival_time:
+            raise error_to_raise(
                 "Departure time must be earlier than arrival time.")
+
+    def clean(self):
+        Journey.validate_departure_time(
+            self.departure_time,
+            self.arrival_time,
+            ValidationError)
 
     def save(self, *args, **kwargs):
         self.full_clean()
