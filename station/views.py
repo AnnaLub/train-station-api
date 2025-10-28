@@ -1,12 +1,12 @@
 from rest_framework import viewsets
 
-from station.models import TrainType, Train, Crew, Station, Route, Journey
+from station.models import TrainType, Train, Crew, Station, Route, Journey, Ticket, Order
 from station.serializers import (TrainTypeSerializer,
                                  TrainSerializer,
                                  CrewSerializer,
                                  StationSerializer,
                                  RouteListSerializer, RouteSerializer, JourneySerializer, JourneyListSerializer,
-                                 JourneyDetailSerializer)
+                                 JourneyDetailSerializer, TicketSerializer, OrderSerializer)
 
 
 class TrainTypeViewSet(viewsets.ModelViewSet):
@@ -58,3 +58,8 @@ class JourneyViewSet(viewsets.ModelViewSet):
         if self.action == "retrieve":
             return JourneyDetailSerializer
         return JourneySerializer
+
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.prefetch_related(
+        "tickets__journey")
+    serializer_class = OrderSerializer

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from station.models import TrainType, Train, Crew, Station, Route, Journey
+from station.models import TrainType, Train, Crew, Station, Route, Journey, Ticket, Order
 
 
 class TrainTypeSerializer(serializers.ModelSerializer):
@@ -76,3 +76,28 @@ class JourneyDetailSerializer(JourneySerializer):
     route = serializers.SlugRelatedField(slug_field="name", read_only=True)
     train = TrainSerializer(read_only=True)
     crew = CrewListSerializer(many=True, read_only=True)
+
+
+class TicketSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        data = super(TicketSerializer, self).validate(attrs)
+        Ticket.validate_ticket(
+            attrs["cargo"],
+            attrs["seat"],
+            attrs["journey"],
+            ValidationError
+        )
+        return data
+
+    class Meta:
+        model = Ticket
+        fields = ("id", "cargo", "seat", "journey")
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    tickets = TicketSerializer(read_only=False,
+                              many=True,
+                              allow_empty=False)
+    class Meta:
+        model = Order
+        fields = ("id", "created_at", "tickets")
