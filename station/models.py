@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -112,6 +113,8 @@ class Journey(models.Model):
 
 class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["-created_at"]
@@ -146,8 +149,7 @@ class Ticket(models.Model):
                 f"Cargo must be between 1 and {journey.train.cargo_num}")
         if not 1 <= seat <= journey.train.cargo_num:
             raise error_to_raise(
-                f"Seat must be between 1 and {journey.train.cargo_num}"
-            )
+                f"Seat must be between 1 and {journey.train.cargo_num}")
 
     def clean(self):
         Ticket.validate_ticket(self.cargo,
