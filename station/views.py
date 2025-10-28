@@ -6,7 +6,8 @@ from station.serializers import (TrainTypeSerializer,
                                  CrewSerializer,
                                  StationSerializer,
                                  RouteListSerializer, RouteSerializer, JourneySerializer, JourneyListSerializer,
-                                 JourneyDetailSerializer, TicketSerializer, OrderSerializer)
+                                 JourneyDetailSerializer, OrderSerializer, OrderListSerializer,
+                                 )
 
 
 class TrainTypeViewSet(viewsets.ModelViewSet):
@@ -45,9 +46,9 @@ class JourneyViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset.prefetch_related("route",
-                                                          "route__source",
-                                                          "route__destination",
-                                                          "train")
+                                                  "route__source",
+                                                  "route__destination",
+                                                  "train")
         if self.action == "list":
             return queryset
         return queryset.prefetch_related("crew")
@@ -61,14 +62,19 @@ class JourneyViewSet(viewsets.ModelViewSet):
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
-    serializer_class = OrderSerializer
 
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)
-        if self.action == "list":
-            queryset.prefetch_related(
-        "tickets__journey")
+        if self.action in ("list", "retrieve"):
+            return queryset.prefetch_related(
+                "tickets__journey__route",
+                "tickets__journey__train")
         return queryset
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return OrderListSerializer
+        return OrderSerializer

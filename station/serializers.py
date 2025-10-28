@@ -110,3 +110,17 @@ class OrderSerializer(serializers.ModelSerializer):
             for ticket_data in tickets_data:
                 Ticket.objects.create(order=order, **ticket_data)
             return order
+
+
+
+class TicketListSerializer(TicketSerializer):
+    journey = serializers.CharField(source="journey.route.name", read_only=True)
+    train = serializers.CharField(source="journey.train", read_only=True)
+
+    class Meta:
+        model = Ticket
+        fields = ("id", "cargo", "seat", "train", "journey")
+
+
+class OrderListSerializer(OrderSerializer):
+    tickets = TicketListSerializer(many=True, read_only=True)
