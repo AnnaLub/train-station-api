@@ -124,3 +124,11 @@ class TicketListSerializer(TicketSerializer):
 
 class OrderListSerializer(OrderSerializer):
     tickets = TicketListSerializer(many=True, read_only=True)
+
+
+class TicketDetailSerializer(TicketSerializer):
+    journey = JourneyListSerializer(read_only=True, many=False)
+
+
+class OrderDetailSerializer(OrderSerializer):
+    tickets = TicketDetailSerializer(many=True, read_only=True)

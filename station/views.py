@@ -5,8 +5,14 @@ from station.serializers import (TrainTypeSerializer,
                                  TrainSerializer,
                                  CrewSerializer,
                                  StationSerializer,
-                                 RouteListSerializer, RouteSerializer, JourneySerializer, JourneyListSerializer,
-                                 JourneyDetailSerializer, OrderSerializer, OrderListSerializer,
+                                 RouteListSerializer,
+                                 RouteSerializer,
+                                 JourneySerializer,
+                                 JourneyListSerializer,
+                                 JourneyDetailSerializer,
+                                 OrderSerializer,
+                                 OrderListSerializer,
+                                 OrderDetailSerializer,
                                  )
 
 
@@ -77,4 +83,6 @@ class OrderViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return OrderListSerializer
+        if self.action == "retrieve":
+            return OrderDetailSerializer
         return OrderSerializer
