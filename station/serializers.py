@@ -151,7 +151,16 @@ class OrderListSerializer(OrderSerializer):
 
 
 class TicketDetailSerializer(TicketSerializer):
-    journey = JourneyListSerializer(read_only=True, many=False)
+    journey = serializers.CharField(source="journey.route.name", read_only=True)
+    train = serializers.CharField(source="journey.train", read_only=True)
+    departure_time = serializers.DateTimeField(read_only=True, source="journey.departure_time")
+    arrival_time = serializers.DateTimeField(read_only=True, source="journey.arrival_time")
+
+    class Meta:
+        model = Ticket
+        fields = ("id", "journey", "train",
+                  "departure_time", "arrival_time", "cargo",
+                  "seat")
 
 
 class OrderDetailSerializer(OrderSerializer):
