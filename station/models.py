@@ -23,7 +23,6 @@ class Train(models.Model):
 
     def __str__(self):
         return (f"{self.name} "
-                f"-cargo_num: {self.cargo_num}, "
                 f"type: {self.train_type}")
 
     @property
