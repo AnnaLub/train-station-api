@@ -81,11 +81,27 @@ class JourneyListSerializer(JourneySerializer):
                   "arrival_time",
                   "tickets_available")
 
+class TicketTakenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ("cargo", "seat")
+
+
 class JourneyDetailSerializer(JourneySerializer):
     route = serializers.SlugRelatedField(slug_field="name", read_only=True)
     train = TrainSerializer(read_only=True)
+    taken_tickets = TicketTakenSerializer(many=True, read_only=True, source="tickets")
     crew = CrewListSerializer(many=True, read_only=True)
 
+    class Meta:
+        model = Journey
+        fields = ("id",
+                  "route",
+                  "departure_time",
+                  "arrival_time"
+                  ,"train",
+                  "taken_tickets",
+                  "crew")
 
 class TicketSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
