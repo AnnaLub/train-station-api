@@ -12,7 +12,7 @@ from station.serializers import (TrainTypeSerializer,
                                  JourneyDetailSerializer,
                                  OrderSerializer,
                                  OrderListSerializer,
-                                 OrderDetailSerializer,
+                                 OrderDetailSerializer, TrainListSerializer,
                                  )
 
 
@@ -23,6 +23,11 @@ class TrainTypeViewSet(viewsets.ModelViewSet):
 class TrainViewSet(viewsets.ModelViewSet):
     queryset = Train.objects.all()
     serializer_class = TrainSerializer
+
+    def get_serializer_class(self):
+        if self.action in ("list", "retrieve") :
+            return TrainListSerializer
+        return TrainSerializer
 
 class CrewViewSet(viewsets.ModelViewSet):
     queryset = Crew.objects.all()
