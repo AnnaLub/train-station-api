@@ -26,6 +26,11 @@ class Train(models.Model):
                 f"-cargo_num: {self.cargo_num}, "
                 f"type: {self.train_type}")
 
+    @property
+    def capacity(self) -> int:
+        return self.cargo_num * self.place_in_cargo
+
+
     class Meta:
         verbose_name_plural = "trains"
         ordering = ["name"]

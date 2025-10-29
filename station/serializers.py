@@ -14,7 +14,8 @@ class TrainTypeSerializer(serializers.ModelSerializer):
 class TrainSerializer(serializers.ModelSerializer):
     class Meta:
         model = Train
-        fields = ("id", "name", "cargo_num", "place_in_cargo", "train_type")
+        fields = ("id", "name", "cargo_num", "place_in_cargo", "train_type", "capacity")
+
 
 class TrainListSerializer(TrainSerializer):
     train_type = serializers.SlugRelatedField(many=False,
