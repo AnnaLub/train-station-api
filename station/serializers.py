@@ -70,6 +70,7 @@ class JourneySerializer(serializers.ModelSerializer):
 class JourneyListSerializer(JourneySerializer):
     route = serializers.SlugRelatedField(slug_field="name", read_only=True)
     train = serializers.SlugRelatedField(slug_field="name", read_only=True)
+    tickets_available = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Journey
@@ -77,7 +78,8 @@ class JourneyListSerializer(JourneySerializer):
                   "route",
                   "train",
                   "departure_time",
-                  "arrival_time")
+                  "arrival_time",
+                  "tickets_available")
 
 class JourneyDetailSerializer(JourneySerializer):
     route = serializers.SlugRelatedField(slug_field="name", read_only=True)

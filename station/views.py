@@ -1,3 +1,4 @@
+from django.db.models import F, Count
 from rest_framework import viewsets
 
 from station.models import TrainType, Train, Crew, Station, Route, Journey, Ticket, Order
@@ -21,7 +22,7 @@ class TrainTypeViewSet(viewsets.ModelViewSet):
     serializer_class = TrainTypeSerializer
 
 class TrainViewSet(viewsets.ModelViewSet):
-    queryset = Train.objects.all()
+    queryset = Train.objects.select_related("train_type")
     serializer_class = TrainSerializer
 
     def get_serializer_class(self):
@@ -56,12 +57,15 @@ class JourneyViewSet(viewsets.ModelViewSet):
     serializer_class = JourneySerializer
 
     def get_queryset(self):
-        queryset = self.queryset.prefetch_related("route",
-                                                  "route__source",
-                                                  "route__destination",
-                                                  "train")
+        queryset = self.queryset.select_related("route__source",
+                                                "route__destination",
+                                                "train")
         if self.action == "list":
-            return queryset
+            return queryset.annotate(
+                tickets_available=F("train__cargo_num")
+                                  *F("train__place_in_cargo")
+                                  -Count("tickets")
+            )
         return queryset.prefetch_related("crew")
 
     def get_serializer_class(self):
