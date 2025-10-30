@@ -6,21 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('station', '0004_alter_route_unique_together'),
+        ("station", "0004_alter_route_unique_together"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='station',
+            name="station",
             unique_together=set(),
         ),
         migrations.AlterField(
-            model_name='station',
-            name='name',
+            model_name="station",
+            name="name",
             field=models.CharField(max_length=100, unique=True),
         ),
         migrations.AlterUniqueTogether(
-            name='route',
-            unique_together={('source', 'destination')},
+            name="route",
+            unique_together={("source", "destination")},
         ),
     ]

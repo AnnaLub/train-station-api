@@ -8,32 +8,54 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='TrainType',
+            name="TrainType",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
             ],
             options={
-                'ordering': ['name'],
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='Train',
+            name="Train",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('cargo_num', models.IntegerField()),
-                ('place_in_cargo', models.IntegerField()),
-                ('train_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='trains', to='station.traintype')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("cargo_num", models.IntegerField()),
+                ("place_in_cargo", models.IntegerField()),
+                (
+                    "train_type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="trains",
+                        to="station.traintype",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'trains',
-                'ordering': ['name'],
+                "verbose_name_plural": "trains",
+                "ordering": ["name"],
             },
         ),
     ]

@@ -6,17 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('station', '0002_crew_order_route_station_journey_route_destination_and_more'),
+        ("station", "0002_crew_order_route_station_journey_route_destination_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='train',
-            name='name',
+            model_name="train",
+            name="name",
             field=models.CharField(max_length=100, unique=True),
         ),
         migrations.AlterUniqueTogether(
-            name='station',
-            unique_together={('name', 'latitude', 'longitude')},
+            name="station",
+            unique_together={("name", "latitude", "longitude")},
         ),
     ]

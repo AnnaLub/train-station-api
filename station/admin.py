@@ -1,21 +1,26 @@
 from django.contrib import admin
 
-from station.models import (TrainType,
-                            Train,
-                            Crew,
-                            Station,
-                            Route,
-                            Journey,
-                            Order,
-                            Ticket)
+from station.models import (
+    TrainType,
+    Train,
+    Crew,
+    Station,
+    Route,
+    Journey,
+    Order,
+    Ticket,
+)
+
 
 class TicketInline(admin.TabularInline):
     model = Ticket
     extra = 1
 
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     inlines = [TicketInline]
+
 
 admin.site.register(TrainType)
 admin.site.register(Train)

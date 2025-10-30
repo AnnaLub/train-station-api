@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('station', '0003_alter_train_name_alter_station_unique_together'),
+        ("station", "0003_alter_train_name_alter_station_unique_together"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='route',
-            unique_together={('source', 'destination', 'distance')},
+            name="route",
+            unique_together={("source", "destination", "distance")},
         ),
     ]
