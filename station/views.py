@@ -1,7 +1,9 @@
+from datetime import datetime
+
 from django.db.models import F, Count
 from rest_framework import viewsets
 
-from station.models import TrainType, Train, Crew, Station, Route, Journey, Ticket, Order
+from station.models import TrainType, Train, Crew, Station, Route, Journey, Order
 from station.serializers import (TrainTypeSerializer,
                                  TrainSerializer,
                                  CrewSerializer,
@@ -41,7 +43,8 @@ class StationViewSet(viewsets.ModelViewSet):
 
 
 class RouteViewSet(viewsets.ModelViewSet):
-    queryset = Route.objects.all().select_related("source", "destination")
+    queryset = Route.objects.all().select_related(
+        "source", "destination")
     serializer_class = RouteSerializer
 
     def get_serializer_class(self):
@@ -50,6 +53,16 @@ class RouteViewSet(viewsets.ModelViewSet):
         if self.action == "retrieve":
             return RouteListSerializer
         return RouteSerializer
+
+    def get_queryset(self):
+        queryset = self.queryset
+        source_data = self.request.query_params.get("source")
+        destination_data = self.request.query_params.get("destination")
+        if source_data:
+            queryset = queryset.filter(source__name__contains=str(source_data))
+        if destination_data:
+            queryset = queryset.filter(destination__name__contains=str(destination_data))
+        return queryset
 
 
 class JourneyViewSet(viewsets.ModelViewSet):
@@ -60,6 +73,18 @@ class JourneyViewSet(viewsets.ModelViewSet):
         queryset = self.queryset.select_related("route__source",
                                                 "route__destination",
                                                 "train")
+        route_param = self.request.query_params.get("route")
+        time_param = self.request.query_params.get("date")
+        train_param = self.request.query_params.get("train")
+        if route_param:
+            queryset = queryset.filter(route__id=int(route_param))
+        if time_param:
+            queryset = queryset.filter(departure_time__gte=
+                                       datetime.strptime(
+                                           time_param,
+                                           "%Y-%m-%d").date())
+        if train_param:
+            queryset = queryset.filter(train__id=int(train_param))
         if self.action == "list":
             return queryset.annotate(
                 tickets_available=F("train__cargo_num")
