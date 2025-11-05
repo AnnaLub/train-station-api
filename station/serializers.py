@@ -35,7 +35,7 @@ class TrainListSerializer(TrainSerializer):
 class CrewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Crew
-        fields = ("id", "first_name", "last_name", "full_name")
+        fields = ("id", "first_name", "last_name", "full_name", "image")
 
 
 class CrewListSerializer(serializers.ModelSerializer):
@@ -91,6 +91,7 @@ class JourneyListSerializer(JourneySerializer):
             "departure_time",
             "arrival_time",
             "tickets_available",
+            "image"
         )
 
 
@@ -116,6 +117,7 @@ class JourneyDetailSerializer(JourneySerializer):
             "train",
             "taken_tickets",
             "crew",
+            "image"
         )
 
 

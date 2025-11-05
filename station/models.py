@@ -1,6 +1,11 @@
+import os
+import uuid
+from pydoc import classname
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.text import slugify
 
 
 class TrainType(models.Model):
@@ -33,13 +38,28 @@ class Train(models.Model):
         ordering = ["name"]
 
 
+def create_custom_path(instance, filename):
+   _, extension = os.path.splitext(filename)
+   if instance.name_for_dir:
+       data_for_dir = "uploads/images/" + f"{instance.name_for_dir}/"
+       return os.path.join(data_for_dir,
+                           f"{slugify(instance.pk)}-{uuid.uuid4()}{extension}")
+   else:
+       raise AttributeError("Object has no attribute 'name_for_dir'")
+
+
 class Crew(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    image = models.ImageField(null=True, upload_to=create_custom_path, blank=True)
 
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+
+    @property
+    def name_for_dir(self):
+        return "crew"
 
     def __str__(self):
         return self.full_name
@@ -89,7 +109,7 @@ class Journey(models.Model):
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
     crew = models.ManyToManyField(Crew)
-
+    image = models.ImageField(null=True, upload_to=create_custom_path, blank=True)
     def __str__(self):
         return (
             f"{self.route.name} {self.train.name}"
@@ -109,6 +129,10 @@ class Journey(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         return super(Journey, self).save(*args, **kwargs)
+
+    @property
+    def name_for_dir(self):
+        return "journeys"
 
 
 class Order(models.Model):
