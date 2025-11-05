@@ -47,6 +47,12 @@ class CrewListSerializer(serializers.ModelSerializer):
         )
 
 
+class CrewImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Crew
+        fields = ("id", "image")
+
+
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
@@ -91,9 +97,12 @@ class JourneyListSerializer(JourneySerializer):
             "departure_time",
             "arrival_time",
             "tickets_available",
-            "image"
         )
 
+class JourneyImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Journey
+        fields = ("id", "image")
 
 class TicketTakenSerializer(serializers.ModelSerializer):
     class Meta:
