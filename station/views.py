@@ -32,14 +32,11 @@ from station.serializers import (
 class TrainTypeViewSet(viewsets.ModelViewSet):
     queryset = TrainType.objects.all()
     serializer_class = TrainTypeSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
 class TrainViewSet(viewsets.ModelViewSet):
     queryset = Train.objects.select_related("train_type")
-    serializer_class = TrainSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self):
@@ -50,7 +47,6 @@ class TrainViewSet(viewsets.ModelViewSet):
 
 class CrewViewSet(viewsets.ModelViewSet):
     queryset = Crew.objects.all()
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
     def get_serializer_class(self):
@@ -76,14 +72,12 @@ class CrewViewSet(viewsets.ModelViewSet):
 class StationViewSet(viewsets.ModelViewSet):
     queryset = Station.objects.all()
     serializer_class = StationSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
 class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.all().select_related("source", "destination")
     serializer_class = RouteSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
     def get_serializer_class(self):
@@ -128,7 +122,6 @@ class RouteViewSet(viewsets.ModelViewSet):
 
 class JourneyViewSet(viewsets.ModelViewSet):
     queryset = Journey.objects.all()
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
     def get_queryset(self):
@@ -213,7 +206,6 @@ class OrderViewSet(ListModelMixin,
                    viewsets.GenericViewSet):
     queryset = Order.objects.all()
     pagination_class = OrderPagination
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
