@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.db.models import F, Count
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
@@ -104,6 +105,26 @@ class RouteViewSet(viewsets.ModelViewSet):
             )
         return queryset
 
+    @extend_schema(
+           parameters=[
+               OpenApiParameter(
+                   "source",
+                   type=str,
+                   location=OpenApiParameter.QUERY,
+                   description="Filter Routers by source.name",
+               ),
+               OpenApiParameter(
+                   "destination",
+                   type=str,
+                   location=OpenApiParameter.QUERY,
+                   description="Filter Routers by destination.name"
+               )
+           ]
+    )
+    def list(self, request, *args, **kwargs):
+       """Get list of routes."""
+       return super().list(request, *args, **kwargs)
+
 
 class JourneyViewSet(viewsets.ModelViewSet):
     queryset = Journey.objects.all()
@@ -153,6 +174,32 @@ class JourneyViewSet(viewsets.ModelViewSet):
         if self.action == "upload_image":
             return JourneyImageSerializer
         return JourneySerializer
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "route",
+                type=int,
+                description="Filter Journeys by route.id",
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                "date",
+                type=datetime,
+                description="Filter Journeys by data (YYYY-MM-DD)",
+                location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(
+                "train",
+                type=int,
+                description="Filter Journeys by train.id",
+                location=OpenApiParameter.QUERY
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """Get list of journeys."""
+        return super().list(request, *args, **kwargs)
 
 
 class OrderPagination(PageNumberPagination):
