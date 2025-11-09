@@ -9,7 +9,13 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from station.models import TrainType, Train, Crew, Station, Route, Journey, Order
+from station.models import (TrainType,
+                            Train,
+                            Crew,
+                            Station,
+                            Route,
+                            Journey,
+                            Order)
 from station.permissions import IsAdminOrIfAuthenticatedReadOnly
 from station.serializers import (
     TrainTypeSerializer,
@@ -24,7 +30,9 @@ from station.serializers import (
     OrderSerializer,
     OrderListSerializer,
     OrderDetailSerializer,
-    TrainListSerializer, CrewListSerializer, CrewImageSerializer, JourneyImageSerializer,
+    TrainListSerializer,
+    CrewImageSerializer,
+    JourneyImageSerializer,
 )
 
 
@@ -63,7 +71,7 @@ class CrewViewSet(mixins.ListModelMixin,
 
     @action(methods=["POST"],
             detail=True,
-            url_path="upload-image", permission_classes = [IsAdminUser])
+            url_path="upload-image", permission_classes=[IsAdminUser])
     def upload_image(self, request, pk=None):
         crew = self.get_object()
         serializer = self.get_serializer(crew, data=request.data)
@@ -73,7 +81,6 @@ class CrewViewSet(mixins.ListModelMixin,
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class StationViewSet(mixins.ListModelMixin,
@@ -129,8 +136,8 @@ class RouteViewSet(mixins.ListModelMixin,
            ]
     )
     def list(self, request, *args, **kwargs):
-       """Get list of routes."""
-       return super().list(request, *args, **kwargs)
+        """Get list of routes."""
+        return super().list(request, *args, **kwargs)
 
 
 class JourneyViewSet(viewsets.ModelViewSet):
@@ -148,15 +155,17 @@ class JourneyViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(route__id=int(route_param))
         if time_param:
             queryset = queryset.filter(
-                departure_time__gte=datetime.strptime(time_param, "%Y-%m-%d").date()
+                departure_time__gte=datetime.strptime(time_param,
+                                                      "%Y-%m-%d").date()
             )
         if train_param:
             queryset = queryset.filter(train__id=int(train_param))
         if self.action == "list":
-            return queryset.annotate(
-                tickets_available=F("train__cargo_num") * F("train__place_in_cargo")
-                - Count("tickets")
-            )
+            return (queryset.annotate(
+                    tickets_available=F("train__cargo_num")
+                    * F("train__place_in_cargo")
+                    - Count("tickets"))
+                    )
         return queryset.prefetch_related("crew")
 
     @action(methods=["POST"],
