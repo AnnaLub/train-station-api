@@ -2,13 +2,12 @@ from datetime import datetime
 
 from django.db.models import F, Count
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework import viewsets, status
-from rest_framework.authentication import TokenAuthentication
+from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
-from rest_framework.mixins import ListModelMixin, CreateModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
 from station.models import TrainType, Train, Crew, Station, Route, Journey, Order
 from station.permissions import IsAdminOrIfAuthenticatedReadOnly
@@ -29,13 +28,18 @@ from station.serializers import (
 )
 
 
-class TrainTypeViewSet(viewsets.ModelViewSet):
+class TrainTypeViewSet(mixins.CreateModelMixin,
+                       mixins.ListModelMixin,
+                       GenericViewSet,):
     queryset = TrainType.objects.all()
     serializer_class = TrainTypeSerializer
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
-class TrainViewSet(viewsets.ModelViewSet):
+class TrainViewSet(mixins.ListModelMixin,
+                   mixins.CreateModelMixin,
+                   mixins.RetrieveModelMixin,
+                   viewsets.GenericViewSet,):
     queryset = Train.objects.select_related("train_type")
     permission_classes = (IsAuthenticated,)
 
@@ -45,7 +49,10 @@ class TrainViewSet(viewsets.ModelViewSet):
         return TrainSerializer
 
 
-class CrewViewSet(viewsets.ModelViewSet):
+class CrewViewSet(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet,):
     queryset = Crew.objects.all()
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
@@ -69,13 +76,19 @@ class CrewViewSet(viewsets.ModelViewSet):
 
 
 
-class StationViewSet(viewsets.ModelViewSet):
+class StationViewSet(mixins.ListModelMixin,
+                     mixins.CreateModelMixin,
+                     mixins.RetrieveModelMixin,
+                     viewsets.GenericViewSet,):
     queryset = Station.objects.all()
     serializer_class = StationSerializer
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
-class RouteViewSet(viewsets.ModelViewSet):
+class RouteViewSet(mixins.ListModelMixin,
+                   mixins.CreateModelMixin,
+                   mixins.RetrieveModelMixin,
+                   viewsets.GenericViewSet,):
     queryset = Route.objects.all().select_related("source", "destination")
     serializer_class = RouteSerializer
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
@@ -201,9 +214,9 @@ class OrderPagination(PageNumberPagination):
     max_page_size = 3
 
 
-class OrderViewSet(ListModelMixin,
-                   CreateModelMixin,
-                   viewsets.GenericViewSet):
+class OrderViewSet(mixins.ListModelMixin,
+                   mixins.CreateModelMixin,
+                   GenericViewSet,):
     queryset = Order.objects.all()
     pagination_class = OrderPagination
     permission_classes = (IsAuthenticated,)
