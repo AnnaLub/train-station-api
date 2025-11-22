@@ -37,7 +37,7 @@ class TrainListSerializer(TrainSerializer):
 class CrewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Crew
-        fields = ("id", "first_name", "last_name", "full_name", "image")
+        fields = ("id", "first_name", "last_name", "full_name")
 
 
 class CrewListSerializer(serializers.ModelSerializer):
@@ -46,7 +46,14 @@ class CrewListSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "full_name",
+            "image"
         )
+
+
+class CrewDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Crew
+        fields = ("id", "first_name", "last_name", "full_name", "image")
 
 
 class CrewImageSerializer(serializers.ModelSerializer):
@@ -84,7 +91,14 @@ class JourneySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Journey
-        fields = "__all__"
+        fields = (
+            "id",
+            "route",
+            "train",
+            "departure_time",
+            "arrival_time",
+            "crew"
+        )
 
 
 class JourneyListSerializer(JourneySerializer):

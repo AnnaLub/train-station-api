@@ -32,7 +32,7 @@ from station.serializers import (
     OrderDetailSerializer,
     TrainListSerializer,
     CrewImageSerializer,
-    JourneyImageSerializer,
+    JourneyImageSerializer, CrewListSerializer, CrewDetailSerializer,
 )
 
 
@@ -65,6 +65,10 @@ class CrewViewSet(mixins.ListModelMixin,
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
     def get_serializer_class(self):
+        if self.action == "list":
+            return CrewListSerializer
+        if self.action == "retrieve":
+            return CrewDetailSerializer
         if self.action == "upload_image":
             return CrewImageSerializer
         return CrewSerializer
@@ -149,7 +153,7 @@ class JourneyViewSet(viewsets.ModelViewSet):
             "route__source", "route__destination", "train"
         )
         route_param = self.request.query_params.get("route")
-        time_param = self.request.query_params.get("date")
+        time_param = self.request.query_params.get("departure_time")
         train_param = self.request.query_params.get("train")
         if route_param:
             queryset = queryset.filter(route__id=int(route_param))
